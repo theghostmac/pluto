@@ -5,19 +5,12 @@ import (
 	"sync"
 )
 
-type LocalTransport struct {
-	address         NetworkAddress
-	consumerChannel chan RPC
-	lock            sync.RWMutex
-	peers           map[NetworkAddress]*LocalTransport
-}
-
 func NewLocalTransport(address NetworkAddress) *LocalTransport {
 	return &LocalTransport{
 		address:         address,
 		consumerChannel: make(chan RPC, 1024),
 		lock:            sync.RWMutex{},
-		peers:           make(map[NetworkAddress]*LocalTransport),
+		Peers:           make(map[NetworkAddress]*LocalTransport),
 	}
 }
 
@@ -29,11 +22,11 @@ func (lt *LocalTransport) Connect(tr *LocalTransport) error {
 	lt.lock.Lock()
 	defer lt.lock.Unlock()
 
-	if _, exists := lt.peers[tr.Address()]; exists {
+	if _, exists := lt.Peers[tr.Address()]; exists {
 		return fmt.Errorf("peer with address %v already exists", tr.Address())
 	}
 
-	lt.peers[tr.Address()] = tr
+	lt.Peers[tr.Address()] = tr
 
 	return nil
 }
@@ -42,6 +35,18 @@ func (lt *LocalTransport) Address() NetworkAddress {
 	return lt.address
 }
 
-func (lt *LocalTransport) SendAMessage(NetworkAddress, []byte) error {
+func (lt *LocalTransport) SendAMessage(destination NetworkAddress, payload []byte) error {
+	lt.lock.Lock()
+	defer lt.lock.Unlock()
+
+	peer, ok := lt.Peers[destination]
+	if !ok {
+		return fmt.Errorf("%s: could not send a messag to %s", lt.address, destination)
+	}
+
+	peer.consumerChannel <- RPC{
+		Source:  string(lt.address),
+		Payload: payload,
+	}
 	return nil
 }
