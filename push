@@ -1,0 +1,41 @@
+#!/bin/zsh
+
+# Shell script to automate git status, git add, git commit, and git push
+
+# Function to display an error message and exit
+function display_error() {
+  echo "Error: $1"
+  exit 1
+}
+
+# Check if the user provided a commit message
+if [[ $# -eq 0 ]]; then
+  display_error "Please provide a commit message."
+fi
+
+# Check if there are any uncommitted changes
+if [[ -n $(git status -s) ]]; then
+  echo "Uncommitted changes found. Running git status:"
+  git status
+  echo "Do you want to continue with the commit and push? (y/n)"
+  read -r choice
+  if [[ "$choice" != "y" ]]; then
+    echo "Aborted."
+    exit 0
+  fi
+fi
+
+# Add all changes
+echo "Running git add ."
+git add .
+
+# Commit changes
+echo "Running git commit -am \"$1\""
+git commit -am "$1"
+
+# Push changes to the remote repository
+echo "Running git push"
+git push origin HEAD
+
+# Display success message
+echo "Push to GitHub completed successfully."
