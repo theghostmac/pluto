@@ -1,6 +1,6 @@
 # Variables
 GO          := go
-BINARY      := myapp
+BINARY      := pluto
 SRC_DIR     := cmd
 SRC         := $(wildcard $(SRC_DIR)/*.go)
 LDFLAGS     := -ldflags="-s -w"
