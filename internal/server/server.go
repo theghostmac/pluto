@@ -1,46 +1,53 @@
 package server
 
 import (
-	"errors"
-	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
-	"net/http"
-	"os"
+	"fmt"
+	"github.com/theghostmac/pluto/internal/network"
+	"time"
 )
 
-type GracefulShutdown struct {
-	ListenAddr  string
-	BaseHandler http.Handler
-	httpServer  *http.Server
+type ServerOperations struct {
+	Transports []network.Transporter
 }
 
-func (server *GracefulShutdown) getRouter() *mux.Router {
-	router := mux.NewRouter()
-	router.SkipClean(true)
-	router.Handle("/", server.BaseHandler)
-	return router
+type Server struct {
+	ServerOperations
+	RPCChannel  chan network.RPC
+	QuitChannel chan struct{}
 }
 
-func (server *GracefulShutdown) Start() {
-	router := server.getRouter()
-	server.httpServer = &http.Server{
-		Addr:    server.ListenAddr,
-		Handler: router,
-	}
-	logrus.Infof("Server listening on %s ", server.ListenAddr)
-	logrus.Info("Pluto is active 🚀")
-
-	if err := server.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logrus.Fatalf("Server error: %v", err)
+func NewServer(operations ServerOperations) *Server {
+	return &Server{
+		ServerOperations: operations,
+		RPCChannel:       make(chan network.RPC),
+		QuitChannel:      make(chan struct{}, 1),
 	}
 }
 
-func (server *GracefulShutdown) Shutdown() {
-	logrus.Info("Shutting down server...")
+func (s *Server) StartServer() {
+	s.InitializeTransports()
+	ticker := time.NewTicker(5 * time.Second)
 
-	if err := server.httpServer.Shutdown(nil); err != nil {
-		logrus.Errorf("Error during server shutdown: %v", err)
+free:
+	for {
+		select {
+		case rpc := <-s.RPCChannel:
+			fmt.Printf("%+v", rpc)
+		case <-s.QuitChannel:
+			break free
+		case <-ticker.C:
+			fmt.Println("Interacting with blocks every 500 milli seconds.")
+		}
 	}
-	logrus.Info("Server shutdown complete.")
-	os.Exit(0)
+	fmt.Println("Server shutdown...")
+}
+
+func (s *Server) InitializeTransports() {
+	for _, trans := range s.Transports {
+		go func(trans network.Transporter) {
+			for rpc := range trans.Consume() {
+				s.RPCChannel <- rpc
+			}
+		}(trans)
+	}
 }

@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func NewLocalTransport(address NetworkAddress) *LocalTransport {
+func NewLocalTransport(address NetworkAddress) Transporter {
 	return &LocalTransport{
 		address:         address,
 		consumerChannel: make(chan RPC, 1024),
@@ -18,7 +18,7 @@ func (lt *LocalTransport) Consume() <-chan RPC {
 	return lt.consumerChannel
 }
 
-func (lt *LocalTransport) Connect(tr *LocalTransport) error {
+func (lt *LocalTransport) Connect(tr Transporter) error {
 	lt.lock.Lock()
 	defer lt.lock.Unlock()
 
@@ -26,7 +26,7 @@ func (lt *LocalTransport) Connect(tr *LocalTransport) error {
 		return fmt.Errorf("peer with address %v already exists", tr.Address())
 	}
 
-	lt.Peers[tr.Address()] = tr
+	lt.Peers[tr.Address()] = tr.(*LocalTransport)
 
 	return nil
 }
