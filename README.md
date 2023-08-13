@@ -11,3 +11,4 @@ but this time, I am doing it properly.
   - [ ] Create an RPC server for communication between two nodes
   - [ ] Write tests for the implemented transport methods
 ![Tests passes](testPasses.png)
+- [ ] Blocks and Transactions
