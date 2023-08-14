@@ -4,6 +4,12 @@ What is a blockchain? [Here](https://en.wikipedia.org/wiki/Blockchain).
 Pluto is a blockchain I build from scratch with Go. I am re-exploring blockchain technology for the second time,
 but this time, I am doing it properly.
 
+# Installation and Running
+1. Clone the repository
+2. Run `make run`
+3. Run `make test`
+4. Run `make clean` to remove the binary file.
+
 # Roadmap
 - [x] Network Layer: RPC communication
   - [x] Create the local transport network model
