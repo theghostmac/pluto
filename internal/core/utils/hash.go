@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"crypto/rand"
+	"fmt"
+)
 
 type Hash [32]uint8
 
@@ -12,4 +15,17 @@ func HashFromBytes(b []byte) Hash {
 	var value Hash
 	copy(value[:], b)
 	return value
+}
+
+func RandomBytes(size int) []byte {
+	token := make([]byte, size)
+	_, err := rand.Read(token)
+	if err != nil {
+		return nil
+	}
+	return token
+}
+
+func RandomHash() Hash {
+	return HashFromBytes(RandomBytes(32))
 }

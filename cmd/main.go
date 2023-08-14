@@ -10,10 +10,11 @@ import (
 func main() {
 	// two testing nodes.
 	node1 := network.NewLocalTransport("LOCAL NODE 1")
-	node2 := network.NewLocalTransport("LOCAL NODE 2")
 
 	// Creating the bootloading node with a specific address
 	bootloadingNode := network.NewLocalTransport("BOOTLOADER")
+	//
+
 	// Remember to:
 	// Initialize the blockchain next, and other networks
 	// blockchain := InitializeBlockchain()
@@ -25,18 +26,14 @@ func main() {
 	}
 	// TODO: delete the bootloadingNode impl.
 
-	err = node1.Connect(node2)
-	if err != nil {
-		return
-	}
-	err = node2.Connect(node1)
+	err = node1.Connect(bootloadingNode)
 	if err != nil {
 		return
 	}
 
 	go func() {
 		for {
-			err := node2.SendAMessage(node1.Address(), []byte("Hey, Node1, I need some cash!"))
+			err := node1.SendAMessage(bootloadingNode.Address(), []byte("Hey, Node1, I need some cash!"))
 			if err != nil {
 				fmt.Printf("Failed to send a message to node 2 due to: %v", err)
 			}

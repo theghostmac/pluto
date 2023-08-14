@@ -8,7 +8,7 @@ import (
 type Header struct {
 	Version           uint32
 	PreviousBlockHash utils.Hash
-	Timestamp         uint64
+	Timestamp         int64
 	Height            uint32
 	Nonce             uint64
 }

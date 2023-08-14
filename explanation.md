@@ -83,6 +83,3 @@ The mechanics of the blockchain can be broken down into the following:
 6. **Central Servers**: While blockchains are decentralized, the concept of a central server doesn't apply in the same way. However, some blockchains might have centralized components like explorer websites that display blockchain data.
 
 7. **Data Propagation**: Nodes in a blockchain network communicate to propagate new transactions and blocks. This is done through a consensus protocol, ensuring that all nodes eventually agree on the state of the blockchain.
-
-8. **Writing Code**: Writing code is indeed an essential part of becoming a blockchain engineer, but understanding the underlying concepts is equally important. You're on the right track by digging into the fundamentals.
-
