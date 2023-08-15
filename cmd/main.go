@@ -8,12 +8,10 @@ import (
 )
 
 func main() {
-	// two testing nodes.
-	node1 := network.NewLocalTransport("LOCAL NODE 1")
-
 	// Creating the bootloading node with a specific address
 	bootloadingNode := network.NewLocalTransport("BOOTLOADER")
-	//
+	// and a testing node.
+	node1 := network.NewLocalTransport("LOCAL NODE 1")
 
 	// Remember to:
 	// Initialize the blockchain next, and other networks
