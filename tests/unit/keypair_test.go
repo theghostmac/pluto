@@ -14,7 +14,7 @@ func TestGeneratePrivateKey(t *testing.T) {
 	}
 
 	// Generate Public Key from Private Key
-	publicKey := privateKey.PublicKey()
+	publicKey := privateKey.GeneratePublicKey()
 
 	// Generate Address from public Key
 	address := publicKey.Address()

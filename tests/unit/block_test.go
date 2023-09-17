@@ -13,7 +13,7 @@ import (
 )
 
 // Note to self
-// use already-made random block generator function: block := unit.RandomBlock()
+// Use already-made random block generator function: block := unit.RandomBlock()
 
 func TestHeaderEncodeDecodeBinary(t *testing.T) {
 	// Create a sample Header with values.
@@ -30,6 +30,7 @@ func TestHeaderEncodeDecodeBinary(t *testing.T) {
 	if err := header.EncodeBinary(&encodedHeaderBuffer); err != nil {
 		t.Fatalf("Error encoding header: %v", err)
 	}
+
 	// Decode the encoded binary data back into the new Header.
 	decodedHeader := blockchain.Header{}
 	if err := decodedHeader.DecodeBinary(&encodedHeaderBuffer); err != nil {
@@ -90,6 +91,42 @@ func TestBlockEncodeDecodeBinary(t *testing.T) {
 	}
 
 	fmt.Print("The block is ", block)
+}
+
+func TestHeaderEncodeBinary(t *testing.T) {
+	// Create a sample Header with values.
+	header := blockchain.Header{
+		Version:           1,
+		PreviousBlockHash: utils.RandomHash(),
+		Timestamp:         time.Now().UnixNano(),
+		Height:            10,
+		Nonce:             67890,
+	}
+
+	// Encode the Header to binary
+	var encodedHeaderBuffer bytes.Buffer
+	if err := header.EncodeBinary(&encodedHeaderBuffer); err != nil {
+		t.Fatalf("Error encoding header: %v", err)
+	}
+}
+
+func TestHeaderDecodeBinary(t *testing.T) {
+	encodedData := []byte{
+		0x01, 0x00, 0x00, 0x00, // Version (uint32, little-endian)
+		0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+		0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, // PreviousBlockHash (20 bytes)
+		0x18, 0x00, 0x00, 0x00, // Timestamp (int64, little-endian)
+		0x0A, 0x00, 0x00, 0x00, // Height (uint32, little-endian)
+		0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE, 0x00, // Nonce (uint64, little-endian)
+	}
+
+	// Create a new Header to decode into
+	var decodedHeader blockchain.Header
+
+	// Decode the binary data into the new Header
+	if err := decodedHeader.DecodeBinary(bytes.NewReader(encodedData)); err != nil {
+		t.Fatalf("Error decoding header: %v", err)
+	}
 }
 
 func TestBlockHash(t *testing.T) {

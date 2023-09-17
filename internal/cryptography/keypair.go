@@ -19,7 +19,7 @@ func GeneratePrivateKey() (PrivateKey, error) {
 	}, nil
 }
 
-func (pk PrivateKey) PublicKey() PublicKey {
+func (pk PrivateKey) GeneratePublicKey() PublicKey {
 	return PublicKey{
 		publicKey: &pk.privateKey.PublicKey,
 	}

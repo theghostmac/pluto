@@ -49,7 +49,10 @@ func (h *Header) DecodeBinary(r io.Reader) error {
 // BlockHasher hashes the Block.
 func (b *Block) BlockHasher() utils.Hash {
 	newBuffer := &bytes.Buffer{}
-	b.Header.EncodeBinary(newBuffer)
+	err := b.Header.EncodeBinary(newBuffer)
+	if err != nil {
+		return [32]uint8{}
+	}
 
 	if b.Hash.IsZero() {
 		b.Hash = utils.Hash(sha256.Sum256(newBuffer.Bytes()))
@@ -89,6 +92,24 @@ func (b *Block) DecodeBinary(r io.Reader) error {
 
 	return nil
 }
+
+//// The DecodeBinary method is used to decode the Block structure from binary format.
+//// It first decodes the Header of the block, and then decodes each transaction in the Transactions field of the Block structure.
+//func (b *Block) DecodeBinary(r io.Reader) error {
+//	// Decode the Header
+//	if err := b.Header.DecodeBinary(r); err != nil {
+//		return err
+//	}
+//
+//	// Decode the Transactions
+//	for i := range b.Transactions {
+//		if err := b.Transactions[i].DecodeBinary(r); err != nil {
+//			return err
+//		}
+//	}
+//
+//	return nil
+//}
 
 func (b *Block) Hasher() utils.Hash {
 	return utils.Hash{} // TODO
