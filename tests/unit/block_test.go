@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/theghostmac/pluto/internal/core/blockchain"
-	"github.com/theghostmac/pluto/internal/core/transactions"
 	"github.com/theghostmac/pluto/internal/core/utils"
+	"github.com/theghostmac/pluto/tests/unit"
 	"reflect"
 	"testing"
 	"time"
 )
+
+// Note to self
+// use already-made random block generator function: block := unit.RandomBlock()
 
 func TestHeaderEncodeDecodeBinary(t *testing.T) {
 	// Create a sample Header with values.
@@ -49,16 +52,7 @@ func headerEqual(h1, h2 blockchain.Header) bool {
 
 func TestBlockEncodeDecodeBinary(t *testing.T) {
 	// Create a sample Block with header and Transaction.
-	block := blockchain.Block{
-		Header: blockchain.Header{
-			Version:           1,
-			PreviousBlockHash: utils.Hash{},
-			Timestamp:         time.Now().UnixNano(),
-			Height:            15,
-			Nonce:             67890,
-		},
-		Transactions: []transactions.Transactions{},
-	}
+	block := unit.RandomBlock()
 
 	// Encode the Block to binary
 	var encodedBlockBuffer bytes.Buffer
@@ -76,22 +70,31 @@ func TestBlockEncodeDecodeBinary(t *testing.T) {
 	// Compare the original Block with the decoded Block
 	if !reflect.DeepEqual(block, decodedBlock) {
 		t.Errorf("Decoded Block does not match original Block.")
+
+		// Print details about the mismatched fields
+		if block.Header.Version != decodedBlock.Header.Version {
+			t.Errorf("Version: Original=%d, Decoded=%d", block.Header.Version, decodedBlock.Header.Version)
+		}
+
+		if block.Header.PreviousBlockHash != decodedBlock.Header.PreviousBlockHash {
+			t.Errorf("PreviousBlockHash: Original=%s, Decoded=%s", block.Header.PreviousBlockHash, decodedBlock.Header.PreviousBlockHash)
+		}
+
+		if block.Header.Timestamp != decodedBlock.Header.Timestamp {
+			t.Errorf("Timestamp: Original=%d, Decoded=%d", block.Header.Timestamp, decodedBlock.Header.Timestamp)
+		}
+
+		if block.Header.Height != decodedBlock.Header.Height {
+			t.Errorf("Height: Original=%d, Decoded=%d", block.Header.Height, decodedBlock.Header.Height)
+		}
 	}
-	fmt.Print(block)
+
+	fmt.Print("The block is ", block)
 }
 
 func TestBlockHash(t *testing.T) {
-	block := &blockchain.Block{
-		Header: blockchain.Header{
-			Version:           1,
-			PreviousBlockHash: utils.RandomHash(),
-			Timestamp:         time.Now().UnixNano(),
-			Height:            10,
-		},
-		Transactions: []transactions.Transactions{},
-		Hash:         utils.Hash{},
-	}
+	block := unit.RandomBlock()
 	hash := block.BlockHasher()
 	fmt.Println(hash)
-	assert.False(t, hash.IsZero())
+	assert.False(t, hash.IsZero(), "Block has should not be zero")
 }

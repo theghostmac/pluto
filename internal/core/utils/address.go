@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"encoding/hex"
+	"fmt"
+)
 
 type Address [20]uint8
 
@@ -10,6 +13,14 @@ func (a Address) ToSlice() []byte {
 		b[i] = a[i]
 	}
 	return b
+}
+
+func (a Address) String() string {
+	// return hex.EncodeToString(a.ToSlice())
+	// do syntactic sugar with 0x
+
+	hexString := hex.EncodeToString(a.ToSlice())
+	return "0x" + hexString
 }
 
 func AddressFromBytes(b []byte) Address {
