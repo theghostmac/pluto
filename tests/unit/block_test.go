@@ -3,6 +3,7 @@ package unit_test
 import (
 	"bytes"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"github.com/theghostmac/pluto/internal/core/blockchain"
 	"github.com/theghostmac/pluto/internal/core/transactions"
 	"github.com/theghostmac/pluto/internal/core/utils"
@@ -77,4 +78,20 @@ func TestBlockEncodeDecodeBinary(t *testing.T) {
 		t.Errorf("Decoded Block does not match original Block.")
 	}
 	fmt.Print(block)
+}
+
+func TestBlockHash(t *testing.T) {
+	block := &blockchain.Block{
+		Header: blockchain.Header{
+			Version:           1,
+			PreviousBlockHash: utils.RandomHash(),
+			Timestamp:         time.Now().UnixNano(),
+			Height:            10,
+		},
+		Transactions: []transactions.Transactions{},
+		Hash:         utils.Hash{},
+	}
+	hash := block.BlockHasher()
+	fmt.Println(hash)
+	assert.False(t, hash.IsZero())
 }

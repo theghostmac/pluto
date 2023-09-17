@@ -48,3 +48,43 @@ Let's break down what each field in these structs represents:
       This field is a slice (an ordered list) that can hold multiple transactions associated with the block. Transactions represent actions or changes to the blockchain, such as transferring cryptocurrency. The `Transactions` field allows you to store and access a list of transactions within the block.
 
 In summary, the `Header` struct stores metadata about a blockchain block, while the `Block` struct encompasses the `Header` and also includes a list of transactions associated with that block. These data structures are fundamental to representing and processing blocks in a blockchain system.
+
+
+More readable way to create these:
+```Go
+package blockchain
+
+import (
+   "encoding/binary"
+   "io"
+)
+
+func (h *Header) encodeDecodeBinary(wr io.ReadWriter, binaryFunc func(io.ReadWriter, binary.ByteOrder, interface{}) error) error {
+   order := binary.LittleEndian
+   err := binaryFunc(wr, order, &h.Version)
+   if err != nil {
+      return err
+   }
+   err = binaryFunc(wr, order, &h.PreviousBlockHash)
+   if err != nil {
+      return err
+   }
+   err = binaryFunc(wr, order, &h.Timestamp)
+   if err != nil {
+      return err
+   }
+   err = binaryFunc(wr, order, &h.Height)
+   if err != nil {
+      return err
+   }
+   return binaryFunc(wr, order, &h.Nonce)
+}
+
+func (h *Header) EncodeBinary(w io.Writer) error {
+   return h.encodeDecodeBinary(w, binary.Write)
+}
+
+func (h *Header) DecodeBinary(r io.Reader) error {
+   return h.encodeDecodeBinary(r, binary.Read)
+}
+``

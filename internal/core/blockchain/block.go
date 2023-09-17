@@ -1,7 +1,10 @@
 package blockchain
 
 import (
+	"bytes"
+	"crypto/sha256"
 	"encoding/binary"
+	"github.com/theghostmac/pluto/internal/core/utils"
 	"io"
 )
 
@@ -43,6 +46,18 @@ func (h *Header) DecodeBinary(r io.Reader) error {
 	return binary.Read(r, binary.LittleEndian, &h.Nonce)
 }
 
+// BlockHasher hashes the Block.
+func (b *Block) BlockHasher() utils.Hash {
+	newBuffer := &bytes.Buffer{}
+	b.Header.EncodeBinary(newBuffer)
+
+	if b.Hash.IsZero() {
+		b.Hash = utils.Hash(sha256.Sum256(newBuffer.Bytes()))
+	}
+
+	return b.Hash
+}
+
 // The EncodeBinary method is used to encode the Block structure into binary format.
 // It first encodes the Header of the block, and then encodes each transaction in the Transactions field of the Block structure.
 func (b *Block) EncodeBinary(w io.Writer) error {
@@ -75,41 +90,6 @@ func (b *Block) DecodeBinary(r io.Reader) error {
 	return nil
 }
 
-/* ----> More readable way to create these:
-package blockchain
-
-import (
-	"encoding/binary"
-	"io"
-)
-
-func (h *Header) encodeDecodeBinary(wr io.ReadWriter, binaryFunc func(io.ReadWriter, binary.ByteOrder, interface{}) error) error {
-	order := binary.LittleEndian
-	err := binaryFunc(wr, order, &h.Version)
-	if err != nil {
-		return err
-	}
-	err = binaryFunc(wr, order, &h.PreviousBlockHash)
-	if err != nil {
-		return err
-	}
-	err = binaryFunc(wr, order, &h.Timestamp)
-	if err != nil {
-		return err
-	}
-	err = binaryFunc(wr, order, &h.Height)
-	if err != nil {
-		return err
-	}
-	return binaryFunc(wr, order, &h.Nonce)
+func (b *Block) Hasher() utils.Hash {
+	return utils.Hash{} // TODO
 }
-
-func (h *Header) EncodeBinary(w io.Writer) error {
-	return h.encodeDecodeBinary(w, binary.Write)
-}
-
-func (h *Header) DecodeBinary(r io.Reader) error {
-	return h.encodeDecodeBinary(r, binary.Read)
-}
-
-*/

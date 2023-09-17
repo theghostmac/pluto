@@ -22,4 +22,7 @@ type Header struct {
 type Block struct {
 	Header
 	Transactions []transactions.Transactions
+
+	// Cached version of the Header's hash
+	Hash utils.Hash
 }
