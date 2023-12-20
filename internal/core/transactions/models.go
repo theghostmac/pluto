@@ -1,10 +1,8 @@
 package transactions
 
 type Transactions struct {
-	Data []byte
-	/*
-		Sender   string
-		Receiver string
-		Amount   int
-	*/
+	Data      []byte
+	Sender    string
+	Recipient string
+	Value     int
 }
