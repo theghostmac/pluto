@@ -41,7 +41,7 @@ func (lt *LocalTransport) SendAMessage(destination NetworkAddress, payload []byt
 
 	peer, ok := lt.Peers[destination]
 	if !ok {
-		return fmt.Errorf("%s: could not send a messag to %s", lt.address, destination)
+		return fmt.Errorf("%s: could not send a message to %s", lt.address, destination)
 	}
 
 	peer.consumerChannel <- RPC{

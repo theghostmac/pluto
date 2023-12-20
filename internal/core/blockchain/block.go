@@ -80,10 +80,12 @@ func (b *Block) EncodeBinary(w io.Writer) error {
 // The DecodeBinary method is used to decode the Block structure from binary format.
 // It first decodes the Header of the block, and then decodes each transaction in the Transactions field of the Block structure.
 func (b *Block) DecodeBinary(r io.Reader) error {
+	// Decode the Header.
 	if err := b.Header.DecodeBinary(r); err != nil {
 		return err
 	}
 
+	// Decode the transactions.
 	for _, tx := range b.Transactions {
 		if err := tx.DecodeBinary(r); err != nil {
 			return err
@@ -92,24 +94,6 @@ func (b *Block) DecodeBinary(r io.Reader) error {
 
 	return nil
 }
-
-//// The DecodeBinary method is used to decode the Block structure from binary format.
-//// It first decodes the Header of the block, and then decodes each transaction in the Transactions field of the Block structure.
-//func (b *Block) DecodeBinary(r io.Reader) error {
-//	// Decode the Header
-//	if err := b.Header.DecodeBinary(r); err != nil {
-//		return err
-//	}
-//
-//	// Decode the Transactions
-//	for i := range b.Transactions {
-//		if err := b.Transactions[i].DecodeBinary(r); err != nil {
-//			return err
-//		}
-//	}
-//
-//	return nil
-//}
 
 func (b *Block) Hasher() utils.Hash {
 	return utils.Hash{} // TODO

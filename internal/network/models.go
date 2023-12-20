@@ -2,7 +2,7 @@ package network
 
 import "sync"
 
-type NetworkAddress string
+type NetworkAddress string // Ethereum uses 30303 for example. I want to be able to specify my own when I run from scratch.
 
 type RPC struct {
 	Source  string
